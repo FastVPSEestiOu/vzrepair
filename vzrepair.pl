@@ -77,7 +77,7 @@ sub main {
     if ( defined $ctid ) {
     
         # correct ctid?
-        if ( $ctid !~ /^\d+$/ ) {
+        if ( $ctid !~ /^\d+\z/ ) {
             debug_print("error", "$ctid is cannot be correct ctid!");
             print_json(qq/{"error_message":"$ctid is cannot be correct ctid!"}/) if $json;
             exit 1;
