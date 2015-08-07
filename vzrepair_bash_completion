@@ -1,0 +1,24 @@
+have vzrepair || have vzrepair.pl && {
+_vzrepair() {
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    subcommands_1="--help --ctid"
+    if [[ ${COMP_CWORD} == 1 ]] ; then
+        COMPREPLY=( $(compgen -W "${subcommands_1}" -- ${cur}) )
+        return 0
+    fi
+
+    if [[ ${COMP_CWORD} == 3 ]] ; then
+        if [[ ${COMP_WORDS[1]} = "--ctid" ]];then
+            subcommands_3="--start --stop --status"
+        else
+            subcommands_3=""
+        fi
+        COMPREPLY=( $(compgen -W "${subcommands_3}" -- ${cur}) )
+        return 0
+    fi
+
+}
+
+complete -F _vzrepair vzrepair vzrepair.pl
+}
