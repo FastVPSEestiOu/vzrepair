@@ -476,6 +476,14 @@ sub start_repair_for_ctid {
         debug_print("warning", "Add chroot-prepare script - failed");
     }
 
+    #Add custom-motd
+    if ( add_custom_motd($repair_ctid) ) {
+        debug_print("info", "Add custom motd - ok");
+    }
+    else {
+        debug_print("warning", "Add custom motd - failed");
+    }
+
     #Set root passwd to repair container
     if ($password) {
         if ( $password eq "rand" ){
@@ -690,6 +698,35 @@ EOF
     print $chroot_file_handle $chroot_prepare_script;
     close $chroot_file_handle;
     chmod "755", $chroot_file;
+    return 1;
+}
+
+sub add_custom_motd {
+    my $ctid = shift;
+
+    my $motd_file = "/vz/root/$ctid/etc/motd";
+    open my $motd_file_handle, ">", $motd_file or return 0;
+    my $motd_file_content = << 'EOF';
+
+-------------------------------------------------------------------
+
+  Welcome to the FastVPS Repair System.
+
+  This Repair System is based on template from your server.
+  Your file-system available in /repair/
+
+  Please, note, that all changes in Repair System will be lost
+  after reboot.
+
+  Best Regards, FastVPS.
+
+-------------------------------------------------------------------
+
+EOF
+;
+    print $motd_file_handle $motd_file_content;
+    close $motd_file_handle;
+    chmod "644", $motd_file;
     return 1;
 }
 
