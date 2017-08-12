@@ -253,7 +253,12 @@ sub create_repair_container {
     }
 
     $ct_config_repair->{'OSTEMPLATE'} = $ostemplate; 
-    $ct_config_repair->{'HOSTNAME'} = "repair.".$ct_config_repair->{'HOSTNAME'};
+    if ( defined  $ct_config_repair->{'HOSTNAME'} ) {
+        $ct_config_repair->{'HOSTNAME'} = "repair.".$ct_config_repair->{'HOSTNAME'};
+    }
+    else {
+        $ct_config_repair->{'HOSTNAME'} = "repair";
+    }
     $ct_config_repair->{'VE_ROOT'} = "/vz/root/\$VEID";
     $ct_config_repair->{'VE_PRIVATE'} = "/vz/private/\$VEID";
     $ct_config_repair->{'DISABLED'} = "no";
