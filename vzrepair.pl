@@ -285,11 +285,11 @@ sub create_repair_container {
     my $result = `$vzctl create $ctid 2>&1`;
     if ($?) {
         $result =~ s/\n/\|/g;
-        debug_print("error", "Cannot create repair container whith errors - $result");
+        debug_print("error", "Cannot create repair container with errors - $result");
         print_json(qq/{"error_message":"Cannot create repair container"}/) if $json;
         exit 1;
     }
-    debug_print("info", "Repair container whith CTID $ctid created successfull");
+    debug_print("info", "Repair container with CTID $ctid created successfull");
     
     return 1;
 }
@@ -387,7 +387,7 @@ sub set_our_password {
     my $result = `$vzctl set $ctid --userpasswd "root:$password" --save 2>&1`;
     if($?) {
         $result =~ s/\n/\|/g;
-        debug_print("warning", "We cannot set root passwd to $ctid whith error - $result! Set password manual, please");
+        debug_print("warning", "We cannot set root passwd to $ctid with error - $result! Set password manual, please");
     }
     else {
         debug_print("info", "Password to $ctid set correctly");
@@ -410,13 +410,13 @@ sub start_repair_for_ctid {
     # If repair already created?
     my $new_ctid_status = get_ctid_status($repair_ctid);
     if ( $new_ctid_status =~ / exist / ) {
-        debug_print("error", "Container whith repair ctid $repair_ctid already exist! Stop repair or destroy it!");
-        print_json(qq/{"ctid":$ctid,"repair_ctid":$repair_ctid,"error_message":"Container whith repair ctid $repair_ctid already exist! Stop repair or destroy it!"}/) if $json;
+        debug_print("error", "Container with repair ctid $repair_ctid already exist! Stop repair or destroy it!");
+        print_json(qq/{"ctid":$ctid,"repair_ctid":$repair_ctid,"error_message":"Container with repair ctid $repair_ctid already exist! Stop repair or destroy it!"}/) if $json;
         exit 1;
     }
 
     # Create repair container
-    debug_print("info", "Start create repair container whith ctid $repair_ctid", "info");
+    debug_print("info", "Start create repair container with ctid $repair_ctid", "info");
     $text_for_json .= qq/{"ctid":$ctid,"repair_ctid":$repair_ctid,/;
     create_repair_container($repair_ctid); 
 
@@ -427,7 +427,7 @@ sub start_repair_for_ctid {
         my $result = `$vzctl stop $ctid 2>&1`;
         if ($?) {
             $result =~ s/\n/\|/g;
-            debug_print("error", "We cannot stop container $ctid whith error - $result! Stop it manual");
+            debug_print("error", "We cannot stop container $ctid with error - $result! Stop it manual");
             print_json(qq/{"ctid":$ctid,"repair_ctid":$repair_ctid,"error_message":"We cannot stop container $ctid"}/) if $json;
             # TODO add destroy repair container?
             exit 1;
@@ -440,7 +440,7 @@ sub start_repair_for_ctid {
     my $result = `$vzctl set $ctid --disabled yes --save 2>&1`;
     if ($?) {
         $result =~ s/\n/\|/g;
-        debug_print("warning", "We cannot disabled container $ctid whith error - $result! Please do it manual");
+        debug_print("warning", "We cannot disabled container $ctid with error - $result! Please do it manual");
     }
 
     #Start repair container
@@ -448,7 +448,7 @@ sub start_repair_for_ctid {
     $result = `$vzctl start $repair_ctid 2>&1`;
     if ($?) {
         $result =~ s/\n/\|/g;
-        debug_print("error", "We cannot start repair container $repair_ctid whith error - $result!");
+        debug_print("error", "We cannot start repair container $repair_ctid with error - $result!");
         print_json(qq/{"ctid":$ctid,"repair_ctid":$repair_ctid,"error_message":"We cannot start repair container"}/) if $json;
         exit 1;
     }
@@ -468,7 +468,7 @@ sub start_repair_for_ctid {
     $result = `$ploop mount -m /vz/root/$repair_ctid/repair/ $ct_private_path/root.hdd/DiskDescriptor.xml 2>&1`;
     if ($?) {
         $result =~ s/\n/\|/g;
-        debug_print("error", "We cannot mount disk from $ctid to /vz/root/$repair_ctid/repair/ whith error - $result!");
+        debug_print("error", "We cannot mount disk from $ctid to /vz/root/$repair_ctid/repair/ with error - $result!");
         print_json(qq({"ctid":$ctid,"repair_ctid":$repair_ctid,"error_message": "We cannot mount disk from $ctid to /vz/root/$repair_ctid/repair/"})) if $json;
         exit 1;
     }
@@ -527,7 +527,7 @@ sub start_repair_for_ctid {
         }
     }
 
-    debug_print("info", "Start repair whith ctid $repair_ctid finished correctly. Do not forget stop repair, when it not need!");
+    debug_print("info", "Start repair with ctid $repair_ctid finished correctly. Do not forget stop repair, when it not need!");
     $text_for_json .= qq/"repair_enabled":true,"error_message":""}/;
     print_json($text_for_json) if $json;
     #print_json(qq/{"ctid":$ctid,"repair_ctid":$repair_ctid, "repair_enabled": true,"error_message":""}/) if $json;
@@ -543,7 +543,7 @@ sub get_repair_status_for_ctid {
     my $ctid = shift;
     my $new_ctid_status = get_ctid_status($repair_ctid);
     if ( $new_ctid_status =~ / exist / ) {
-        debug_print("info", "Repair must be enabled -container whith repair ctid $repair_ctid already exist!");
+        debug_print("info", "Repair must be enabled -container with repair ctid $repair_ctid already exist!");
         print_json(qq/{"ctid":$ctid,"repair_ctid":$repair_ctid,"repair_enabled":true}/) if $json;
         if($debug) {
             print "\n";
@@ -553,7 +553,7 @@ sub get_repair_status_for_ctid {
         exit 0;
     }
     else {
-        debug_print("info", "Repair not enable  - we have not container whith repair ctid $repair_ctid");
+        debug_print("info", "Repair not enable  - we have not container with repair ctid $repair_ctid");
         print_json(qq/{"ctid":$ctid,"repair_ctid":$repair_ctid,"repair_enabled":false}/) if $json;
         exit 0;
          
@@ -577,11 +577,11 @@ sub stop_repair_for_ctid {
         
         #Stop if repair container runnig
         if ( $new_ctid_status =~ / running$/ ) {
-            debug_print("info", "Stop repair container whith ctid $repair_ctid");
+            debug_print("info", "Stop repair container with ctid $repair_ctid");
             my $result = `$vzctl stop $repair_ctid 2>&1`;
             if ($?) {
                 $result =~ s/\n/\|/g;
-                debug_print("error", "We cannot stop $repair_ctid whith error - $result!");
+                debug_print("error", "We cannot stop $repair_ctid with error - $result!");
                 print_json(qq/{"ctid":$ctid,"repair_ctid":$repair_ctid,"error_message":"We cannot stop repair container"}/) if $json;
                 exit 1;
             }
@@ -607,7 +607,7 @@ sub stop_repair_for_ctid {
             }
             else {
                 #Realy fail to umount 
-                debug_print("error", "We cannot umount $ctid disk via $ploop whith error - $result!");
+                debug_print("error", "We cannot umount $ctid disk via $ploop with error - $result!");
             }
         }
 
@@ -622,7 +622,7 @@ sub stop_repair_for_ctid {
         $result = `$vzctl destroy $repair_ctid 2>&1`;
         if ($?) {
             $result =~ s/\n/\|/g;
-            debug_print("error", "We cannot destroy $repair_ctid whith $result! Please destroy it manual!");
+            debug_print("error", "We cannot destroy $repair_ctid with $result! Please destroy it manual!");
             print_json(qq/{"ctid":$ctid,"repair_ctid":$repair_ctid,"error_message":"We cannot destroy repair container"}/) if $json;
             exit 1;
         }
@@ -632,7 +632,7 @@ sub stop_repair_for_ctid {
         debug_print("info", "Enabled container $ctid");
         if ($?) {
             $result =~ s/\n/\|/g;
-            debug_print("warning", "We cannot enabled container $ctid whith error - $result! Please do it manual");
+            debug_print("warning", "We cannot enabled container $ctid with error - $result! Please do it manual");
         }
 
         debug_print("info", "Repair stopped successful - you can start $ctid if it need");
@@ -645,7 +645,7 @@ sub stop_repair_for_ctid {
         exit 0;
    }
    else {
-       debug_print("info", "Repair not enable  - we have not container whith repair ctid $repair_ctid");
+       debug_print("info", "Repair not enable  - we have not container with repair ctid $repair_ctid");
         print_json(qq/{"ctid":$ctid,"repair_ctid":$repair_ctid,"repair_enabled":false,"error_message":""}/) if $json;
        exit 0;
    }
@@ -788,11 +788,11 @@ Start repair - stop container if it running, create and start repair container, 
 
 =item B<--password>
 
-Used only whith --start . Set password to repair container. By default(without param) - use password from main container. If set "rand" - set random pass.
+Used only with --start . Set password to repair container. By default(without param) - use password from main container. If set "rand" - set random pass.
 
 =item B<--template>
 
-Used only whith --start . Set maunal template for repair container. Use $set_only_local_templates variable, for use it only with local templates or not
+Used only with --start . Set maunal template for repair container. Use $set_only_local_templates variable, for use it only with local templates or not
 
 =back
 
